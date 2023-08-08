@@ -34,7 +34,7 @@ import java.util.function.Predicate;
             Pair<BlockState, BlockPos> result = doesSnowGenerate(biome, pos, world);
             if (result != null)
             {
-                world.setBlockState(result.getRight(), result.getLeft());
+                world.setBlockAndUpdate(result.getRight(), result.getLeft());
             }
         }
     }
@@ -58,14 +58,14 @@ import java.util.function.Predicate;
             if (result.getLeft() < Config.SERVER.getSnowAccumulationLimit())
             {
                 BlockState state = world.getBlockState(result.getRight());
-                if (state.isIn(Blocks.SNOW))
+                if (state.is(Blocks.SNOW))
                 {
-                    int layers = state.get(SnowBlock.LAYERS);
-                    state = state.with(SnowBlock.LAYERS, layers + 1);
+                    int layers = state.getValue(SnowBlock.LAYERS);
+                    state = state.setValue(SnowBlock.LAYERS, layers + 1);
                     return Pair.of(state, result.getRight());
                 } else
                 {
-                    return Pair.of(Blocks.SNOW.getDefaultState(), result.getRight());
+                    return Pair.of(Blocks.SNOW.defaultBlockState(), result.getRight());
                 }
             }
         }
@@ -80,16 +80,16 @@ import java.util.function.Predicate;
     @Nullable private static Pair<Integer, BlockPos> getSnowHeight(IWorldReader world, BlockPos pos)
     {
         Predicate<BlockPos> posTest = (testPos) -> testPos.getY() >= 0 && testPos.getY() < 256 &&
-                world.getLightFor(LightType.BLOCK, testPos) < 10;
+                world.getBrightness(LightType.BLOCK, testPos) < 10;
         if (!posTest.test(pos))
         {
             return null;
         }
         BlockState state = world.getBlockState(pos);
         int blockLayers;
-        if (state.isIn(Blocks.SNOW))
+        if (state.is(Blocks.SNOW))
         {
-            blockLayers = state.get(SnowBlock.LAYERS);
+            blockLayers = state.getValue(SnowBlock.LAYERS);
         } else
         {
             return null;
@@ -97,16 +97,16 @@ import java.util.function.Predicate;
         int totalLayers = blockLayers;
         while (blockLayers == 8)
         {
-            pos = pos.up();
+            pos = pos.above();
             if (!posTest.test(pos))
             {
                 return null;
             }
             state = world.getBlockState(pos);
             blockLayers = 0;
-            if (state.isIn(Blocks.SNOW))
+            if (state.is(Blocks.SNOW))
             {
-                blockLayers = state.get(SnowBlock.LAYERS);
+                blockLayers = state.getValue(SnowBlock.LAYERS);
             }
             totalLayers += blockLayers;
         }

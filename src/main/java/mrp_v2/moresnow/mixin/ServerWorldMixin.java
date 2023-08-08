@@ -16,7 +16,7 @@ import org.spongepowered.asm.mixin.injection.callback.LocalCapture;
 
 @Mixin(ServerWorld.class) public abstract class ServerWorldMixin
 {
-    @Inject(method = "tickEnvironment", at = @At(value = "JUMP", opcode = Opcodes.IFEQ, ordinal = 6),
+    @Inject(method = "tickEnvironment", at = @At(value = "JUMP", opcode = Opcodes.IFEQ, ordinal = 2),
             locals = LocalCapture.CAPTURE_FAILHARD)
     public void tickEnvironment(Chunk chunkIn, int randomTickSpeed, CallbackInfo ci, ChunkPos chunkpos, boolean flag,
             int i, int j, IProfiler iprofiler, BlockPos blockpos2, BlockPos blockpos3, Biome biome)
